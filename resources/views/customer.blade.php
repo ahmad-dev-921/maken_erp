@@ -404,8 +404,8 @@
                     <div class="mk-field">
                         <label>Opening Balance</label>
                         <div class="mk-input-wrap">
-                            <i class="fas fa-dollar ico"></i>
-                            <input type="text" id="company" class="mk-input" placeholder="Enter company name">
+                            <i class="fas fa-wallet ico"></i>
+                            <input type="number" step="0.01" id="opening_balance" class="mk-input" placeholder="0.00">
                         </div>
                     </div>
 
@@ -578,7 +578,7 @@ document.getElementById('customerForm').onsubmit = function(e) {
         name:            document.getElementById('name').value,
         email:           document.getElementById('email').value,
         phone:           document.getElementById('phone').value,
-        opening_balance: 0,
+        opening_balance: document.getElementById('opening_balance').value || 0,
         address:         document.getElementById('address').value,
     };
     (id ? axios.put(`${apiBase}/${id}`, data) : axios.post(apiBase, data))
@@ -592,6 +592,7 @@ function editCustomer(c) {
     document.getElementById('name').value         = c.name;
     document.getElementById('email').value        = c.email||'';
     document.getElementById('phone').value        = c.phone;
+    document.getElementById('opening_balance').value = c.opening_balance||0;
     document.getElementById('address').value      = c.address||'';
     document.getElementById('saveBtnText').textContent = 'Update Customer';
     document.getElementById('saveBtn').classList.add('slate');

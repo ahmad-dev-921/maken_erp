@@ -16,3 +16,23 @@ Route::get('/dashboard', function () {
 Route::get('/customer', function () {
     return view('customer');
 });
+
+// Products/Inventory page
+Route::get('/inventory', function () {
+    return view('inventory');
+});
+
+// POS page
+Route::get('/pos', function () {
+    return view('pos');
+});
+
+// Quotations page
+Route::get('/quotations', function () {
+    return view('quotations');
+});
+
+// Sales Report page
+Route::get('/report', function () {
+    return view('report');
+});

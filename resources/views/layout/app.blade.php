@@ -254,6 +254,20 @@
         </a>
     </div>
 
+    <div class="nav-item-wrapper">
+        <a href="/pos" class="nav-link {{ request()->is('pos') ? 'active' : '' }}">
+            <i data-lucide="shopping-cart"></i>
+            <span class="nav-text">POS Terminal</span>
+        </a>
+    </div>
+
+    <div class="nav-item-wrapper">
+        <a href="/report" class="nav-link {{ request()->is('report') ? 'active' : '' }}">
+            <i data-lucide="bar-chart-3"></i>
+            <span class="nav-text">Sales Report</span>
+        </a>
+    </div>
+
     <p class="menu-section-label">People</p>
 
     <div class="nav-item-wrapper">
@@ -297,7 +311,116 @@
     </div>
 </div>
 
+<!-- Global Printable Invoice (Hidden from Screen) -->
+<div id="printableInvoice" style="position: absolute; left: -9999px; top: 0; width: 800px;">
+    <style>
+        @media screen {
+            #printableInvoice { display: none; }
+        }
+        @media print {
+            header, footer, aside, nav, .sidebar, .top-bar, .scroll-area, #overlay, #main-wrapper { display: none !important; }
+            body { background: white !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; height: auto !important; }
+            #printableInvoice { 
+                display: block !important; 
+                position: absolute !important; 
+                left: 0 !important; 
+                top: 0 !important; 
+                width: 100% !important; 
+                visibility: visible !important;
+                margin: 0 !important;
+                padding: 20px !important;
+            }
+            #printableInvoice * { visibility: visible !important; }
+        }
+        .inv-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px; }
+        .inv-title { font-size: 24px; font-weight: 800; text-transform: uppercase; margin: 0; }
+        .inv-meta { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; }
+        .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .inv-table th { border-bottom: 2px solid #000; padding: 10px; text-align: left; }
+        .inv-table td { border-bottom: 1px solid #eee; padding: 10px; }
+        .inv-total { text-align: right; font-size: 18px; font-weight: 800; border-top: 2px solid #000; padding-top: 10px; }
+    </style>
+    <div class="inv-header">
+        <h1 class="inv-title">Maken Electronics</h1>
+        <p style="margin:5px 0; font-weight:600;">Premium Solar & Electronic Solutions</p>
+        <p style="margin:0; font-size:12px;">Shop #12, Electronic Market, Karachi | Tel: 0321-1234567</p>
+    </div>
+    <div class="inv-meta">
+        <div>
+            <strong style="text-decoration:underline;">CUSTOMER INFO:</strong><br>
+            <span style="font-size:16px; font-weight:700;" id="printCustomer">---</span><br>
+            <span id="printPhone">---</span>
+        </div>
+        <div style="text-align:right;">
+            <strong>INVOICE #:</strong> <span id="printInvoiceId" style="font-weight:700;">---</span><br>
+            <strong>DATE:</strong> <span id="printDate">---</span><br>
+            <strong>STATUS:</strong> <span style="color:green; font-weight:700;">PAID</span>
+        </div>
+    </div>
+    <table class="inv-table">
+        <thead>
+            <tr style="background:#f0f0f0;">
+                <th>PRODUCT DESCRIPTION</th>
+                <th style="text-align:center;">QTY</th>
+                <th style="text-align:right;">UNIT PRICE</th>
+                <th style="text-align:right;">TOTAL</th>
+            </tr>
+        </thead>
+        <tbody id="printBody"></tbody>
+    </table>
+    <div class="inv-total">
+        <span style="font-size:14px; font-weight:400;">NET AMOUNT PAYABLE:</span><br>
+        Rs. <span id="printGrandTotal">0.00</span>
+    </div>
+    <div style="margin-top:50px; display:flex; justify-content:space-between; font-size:12px;">
+        <div style="border-top:1px solid #000; width:150px; text-align:center;">Customer Signature</div>
+        <div style="border-top:1px solid #000; width:150px; text-align:center;">Authorized Signatory</div>
+    </div>
+    <div style="margin-top:40px; text-align:center; font-size:11px; color:#666; border-top:1px solid #eee; padding-top:10px;">
+        This is a computer generated invoice and does not require a physical signature.<br>
+        Thank you for your business!
+    </div>
+</div>
+
 <script>
+    function printSale(id) {
+        if (!id) return;
+        const btn = event?.target;
+        const oldText = btn ? btn.innerHTML : '';
+        if (btn && btn.tagName === 'BUTTON') btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        axios.get('/api/sales/' + id).then(r => {
+            if (btn && btn.tagName === 'BUTTON') btn.innerHTML = oldText;
+            const s = r.data.data;
+            document.getElementById('printCustomer').textContent = s.customer ? s.customer.name : 'Walking Customer';
+            document.getElementById('printPhone').textContent = s.customer ? s.customer.phone : '---';
+            document.getElementById('printInvoiceId').textContent = 'INV-' + s.id;
+            document.getElementById('printDate').textContent = s.date;
+            document.getElementById('printGrandTotal').textContent = parseFloat(s.total_bill).toLocaleString();
+            
+            let html = '';
+            s.details.forEach(d => {
+                html += `
+                    <tr>
+                        <td>${d.product ? d.product.name : 'Unknown'}</td>
+                        <td style="text-align:center;">${d.qty}</td>
+                        <td style="text-align:right;">Rs. ${parseFloat(d.price).toLocaleString()}</td>
+                        <td style="text-align:right;">Rs. ${parseFloat(d.total).toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('printBody').innerHTML = html;
+            
+            // Wait for DOM update before printing
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        }).catch(err => {
+            console.error(err);
+            alert('Failed to generate invoice. Please check console.');
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
 
