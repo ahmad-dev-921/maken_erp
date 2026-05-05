@@ -215,6 +215,7 @@
         }
     </style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <body>
 
 <div id="overlay"></div>
@@ -381,7 +382,20 @@
         Thank you for your business!
     </div>
 </div>
+<div class="modal fade" id="appModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
 
+      <div class="modal-body text-center p-4">
+        <div id="modalIcon" style="font-size:40px;"></div>
+        <h6 class="mt-3" id="modalMessage"></h6>
+      </div>
+
+      <div class="modal-footer justify-content-center" id="modalActions"></div>
+
+    </div>
+  </div>
+</div>
 <script>
     function printSale(id) {
         if (!id) return;
@@ -453,6 +467,43 @@
         // Close mobile sidebar on overlay click
         overlay.addEventListener('click', toggleSidebar);
     });
+    let modal;
+
+window.addEventListener('DOMContentLoaded', () => {
+    modal = new bootstrap.Modal(document.getElementById('appModal'));
+});
+
+function showPopup(message, type = 'success', confirmCallback = null) {
+    document.getElementById('modalMessage').innerText = message;
+
+    const icon = document.getElementById('modalIcon');
+    const actions = document.getElementById('modalActions');
+
+    if (type === 'success') icon.innerHTML = '✅';
+    else if (type === 'error') icon.innerHTML = '❌';
+    else if (type === 'confirm') icon.innerHTML = '⚠️';
+
+    actions.innerHTML = '';
+
+    if (type === 'confirm') {
+        actions.innerHTML = `
+            <button class="btn btn-secondary" onclick="modal.hide()">Cancel</button>
+            <button class="btn btn-danger" id="confirmBtn">Delete</button>
+        `;
+
+        setTimeout(() => {
+            document.getElementById('confirmBtn').onclick = () => {
+                modal.hide();
+                confirmCallback && confirmCallback();
+            };
+        }, 0);
+
+    } else {
+        actions.innerHTML = `<button class="btn btn-warning" onclick="modal.hide()">OK</button>`;
+    }
+
+    modal.show();
+}
 </script>
 </body>
 </html>
