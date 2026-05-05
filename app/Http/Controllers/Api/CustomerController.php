@@ -12,45 +12,41 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 class CustomerController extends Controller
 {
-     public function index(CustomerRequest $request)
+    public function index(Request $request)
     {
         try {
-            $ids = $request->get('ids') ? explode(',', $request->get('ids')) : [];
-            if (request()->has('name_list') && request('name_list') == 'true') {
-                return $this->apiResponse(true, 'Customers names retrieved successfully.', DB::table('customers')->select('id', 'name')->whereNull('deleted_at')->get());
-            }
             $query = Customer::query();
-            $query->when(count($ids) > 0, function ($q) use ($ids) {
-                return $q->whereIn('id', $ids);
-            });
-            $query->when($request->filled('search'), function ($q) use ($request) {
-                return $q->where('name', 'LIKE', "%{$request->search}%")
-                    ->orWhere('email', 'LIKE', "%{$request->search}%")
-                    ->orWhere('phone', 'LIKE', "%{$request->search}%")
-                    ->orWhere('address', 'LIKE', "%{$request->search}%")
-                    ->orWhere('opening_balance', 'LIKE', "%{$request->search}%");
-            });
-            $query->when(count($ids) > 0, fn($q) => $q->whereIn('id', $ids));
 
-            $hasData = $query->exists();
-
-           
- if (!$hasData) {
-                return $this->apiResponse(false, 'No customers found.', null, 404);
+            if ($request->filled('search')) {
+                $query->where(function($q) use ($request) {
+                    $q->where('name', 'LIKE', "%{$request->search}%")
+                      ->orWhere('email', 'LIKE', "%{$request->search}%")
+                      ->orWhere('phone', 'LIKE', "%{$request->search}%")
+                      ->orWhere('address', 'LIKE', "%{$request->search}%")
+                      ->orWhere('opening_balance', 'LIKE', "%{$request->search}%");
+                });
             }
-            $data = $query->paginate(request('limit', 25));
-            return CustomerResource::collection($data)
-                ->additional([
+
+            if ($request->has('all')) {
+                return response()->json([
                     'success' => true,
-                    'message' => 'Customers retrieved successfully.',
+                    'data' => $query->get()
                 ]);
-        } catch (\Exception $e) {
+            }
+
+            $data = $query->paginate($request->get('limit', 25));
             return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve customers: ' . $e->getMessage(),
-            ], 500);
+                'success' => true,
+                'data' => $data->items(),
+                'total' => $data->total(),
+                'current_page' => $data->currentPage(),
+                'last_page' => $data->lastPage()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
 
     public function store(CustomerRequest $request)
     {
