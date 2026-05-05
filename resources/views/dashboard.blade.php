@@ -137,8 +137,9 @@
                 </a>
             </div>
         </div>
-        <!-- Sales Graphs Section -->
-<div class="main-grid" style="margin-top: 20px;">
+
+    </div>
+    <div class="main-grid" style="margin-top: 20px;">
 
     <!-- Weekly Sales -->
     <div class="mk-card">
@@ -167,7 +168,6 @@
     </div>
 
 </div>
-    </div>
 </div>
 
 <script>
@@ -175,20 +175,21 @@ let weeklyChartInstance = null;
 let monthlyChartInstance = null;
 
 function loadDashboard() {
-
     axios.get('/api/dashboard-stats').then(r => {
         const d = r.data;
         const stats = d.stats;
 
+        // ===== Stats =====
         document.getElementById('todaySales').textContent = 'Rs. ' + parseFloat(stats.today_sales).toLocaleString();
         document.getElementById('totalCust').textContent = stats.total_customers;
         document.getElementById('totalProd').textContent = stats.total_products;
         document.getElementById('lowStock').textContent = stats.low_stock;
 
+        // ===== Recent Sales =====
         const body = document.getElementById('recentSalesBody');
 
         if (d.recent_sales.length === 0) {
-            body.innerHTML = '<tr><td colspan="4" style="text-align:center;">No recent sales.</td></tr>';
+            body.innerHTML = '<tr><td colspan="4">No recent sales</td></tr>';
         } else {
             body.innerHTML = d.recent_sales.map(s => `
                 <tr>
@@ -199,66 +200,49 @@ function loadDashboard() {
                 </tr>
             `).join('');
         }
-    });
 
-    loadWeeklyChart();
-    loadMonthlyChart();
-}
-function loadWeeklyChart() {
-    axios.get('/api/dashboard/weekly-sales').then(res => {
-        const data = res.data.data;
-
-        const labels = data.map(d => d.day);
-        const values = data.map(d => d.total);
+        // ===== WEEKLY GRAPH =====
+        const weeklyLabels = d.weekly_sales.map(x => x.day);
+        const weeklyValues = d.weekly_sales.map(x => x.total);
 
         if (weeklyChartInstance) weeklyChartInstance.destroy();
 
         weeklyChartInstance = new Chart(document.getElementById('weeklyChart'), {
             type: 'bar',
             data: {
-                labels: labels,
+                labels: weeklyLabels,
                 datasets: [{
-                    label: 'Sales (Weekly)',
-                    data: values,
+                    data: weeklyValues,
                     backgroundColor: '#fbbf24'
                 }]
             },
             options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false }
-                }
+                plugins: { legend: { display: false } }
             }
         });
-    });
-}
-    function loadMonthlyChart() {
-    axios.get('/api/dashboard/monthly-sales').then(res => {
-        const data = res.data.data;
 
-        const labels = data.map(d => d.month);
-        const values = data.map(d => d.total);
+        // ===== MONTHLY GRAPH =====
+        const monthlyLabels = d.monthly_sales.map(x => x.month);
+        const monthlyValues = d.monthly_sales.map(x => x.total);
 
         if (monthlyChartInstance) monthlyChartInstance.destroy();
 
         monthlyChartInstance = new Chart(document.getElementById('monthlyChart'), {
             type: 'line',
             data: {
-                labels: labels,
+                labels: monthlyLabels,
                 datasets: [{
-                    label: 'Sales (Monthly)',
-                    data: values,
+                    data: monthlyValues,
                     borderColor: '#d97706',
-                    tension: 0.4,
-                    fill: true
+                    fill: true,
+                    tension: 0.4
                 }]
-            },
-            options: {
-                responsive: true
             }
         });
-    });
+
+    }).catch(err => console.error(err));
 }
+
 window.onload = loadDashboard;
 </script>
 
