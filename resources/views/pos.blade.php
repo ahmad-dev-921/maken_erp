@@ -179,12 +179,12 @@ function renderProducts(search = '') {
 
 function addToCart(id) {
     const p = products.find(p => p.id === id);
-    if (p.qty <= 0) { alert('Out of stock!'); return; }
+    if (p.qty <= 0) { showPopup('Out of stock!', 'error'); return; }
     
     const existing = cart.find(item => item.product_id === id);
     if (existing) {
         if (existing.qty < p.qty) existing.qty++;
-        else alert('No more stock available!');
+        else showPopup('No more stock available!', 'error');
     } else {
         cart.push({
             product_id: p.id,
@@ -247,8 +247,8 @@ function clearCart() {
 
 function submitSale() {
     const customerId = document.getElementById('customer_id').value;
-    if (!customerId) { alert('Please select a customer'); return; }
-    if (cart.length === 0) { alert('Cart is empty'); return; }
+    if (!customerId) { showPopup('Please select a customer', 'error'); return; }
+    if (cart.length === 0) { showPopup('Cart is empty', 'error'); return; }
     
     const totalBill = cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
     
@@ -267,16 +267,18 @@ function submitSale() {
     document.getElementById('submitBtn').disabled = true;
     document.getElementById('submitBtn').textContent = 'Processing...';
     
-    axios.post('/api/sales', data)
-        .then(r => {
-            alert('Sale completed successfully!');
-            if(confirm('Do you want to print the invoice?')) {
-                printSale(r.data.sale_id);
-            }
-            clearCart();
-            loadData(); // Reload products to update stock
-        })
-        .catch(err => alert(err.response?.data?.message || 'Error completing sale'))
+axios.post('/api/sales', data)
+    .then(r => {
+        showPopup('Sale completed successfully!', 'success');
+
+        showPopup('Do you want to print the invoice?', 'confirm', () => {
+            printSale(r.data.sale_id);
+        });
+
+        clearCart();
+        loadData();
+    })
+        .catch(err => showPopup(err.response?.data?.message || 'Error completing sale', 'error'))
         .finally(() => {
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('submitBtn').textContent = 'COMPLETE';
@@ -285,7 +287,7 @@ function submitSale() {
 
 /* HOLD / UNHOLD */
 function holdCart() {
-    if (cart.length === 0) { alert('Cart is empty'); return; }
+    if (cart.length === 0) { showPopup('Cart is empty', 'error'); return; }
     const ref = prompt("Enter a reference name for this hold:");
     if (ref === null) return;
 
@@ -298,15 +300,15 @@ function holdCart() {
     };
 
     axios.post('/api/quotations', data).then(r => {
-        alert('Cart held successfully');
+        showPopup('Cart held successfully', 'success');
         clearCart();
-    }).catch(err => alert('Failed to hold cart'));
+    }).catch(err => showPopup('Failed to hold cart', 'error'));
 }
 
 function showHeldCarts() {
     axios.get('/api/quotations').then(r => {
         const held = r.data.data;
-        if (held.length === 0) { alert('No held carts found'); return; }
+        if (held.length === 0) { showPopup('No held carts found', 'error'); return; }
         
         let html = '<div style="max-height:400px; overflow-y:auto;">';
         held.forEach(h => {
@@ -358,12 +360,29 @@ function restoreHeld(id) {
 }
 
 function deleteHeld(id, silent = false) {
-    if (!silent && !confirm('Remove this held cart?')) return;
-    axios.delete(`/api/quotations/${id}`).then(r => {
-        if (!silent) {
-            if(document.getElementById('heldOverlay')) document.getElementById('heldOverlay').remove();
-            showHeldCarts();
-        }
+
+    // silent delete (no confirmation)
+    if (silent) {
+        return axios.delete(`/api/quotations/${id}`)
+            .then(r => {
+                showPopup('Removed successfully', 'success');
+                showHeldCarts();
+            })
+            .catch(() => {
+                showPopup('Failed to delete', 'error');
+            });
+    }
+
+    // confirm delete
+    showPopup('Remove this held cart?', 'confirm', () => {
+        axios.delete(`/api/quotations/${id}`)
+            .then(r => {
+                showPopup('Removed successfully', 'success');
+                showHeldCarts();
+            })
+            .catch(() => {
+                showPopup('Failed to delete', 'error');
+            });
     });
 }
 
