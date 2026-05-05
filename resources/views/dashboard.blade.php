@@ -5,7 +5,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     :root {
         --maken-amber: #fbbf24;
@@ -137,39 +137,128 @@
                 </a>
             </div>
         </div>
+        <!-- Sales Graphs Section -->
+<div class="main-grid" style="margin-top: 20px;">
+
+    <!-- Weekly Sales -->
+    <div class="mk-card">
+        <div class="card-header">
+            <span>
+                <i class="fas fa-chart-bar" style="color:var(--maken-amber-dark); margin-right:8px;"></i>
+                Weekly Sales
+            </span>
+        </div>
+        <div class="card-body">
+            <canvas id="weeklyChart" height="120"></canvas>
+        </div>
+    </div>
+
+    <!-- Monthly Sales -->
+    <div class="mk-card">
+        <div class="card-header">
+            <span>
+                <i class="fas fa-chart-line" style="color:var(--maken-amber-dark); margin-right:8px;"></i>
+                Monthly Sales
+            </span>
+        </div>
+        <div class="card-body">
+            <canvas id="monthlyChart" height="120"></canvas>
+        </div>
+    </div>
+
+</div>
     </div>
 </div>
 
 <script>
+let weeklyChartInstance = null;
+let monthlyChartInstance = null;
+
 function loadDashboard() {
+
     axios.get('/api/dashboard-stats').then(r => {
         const d = r.data;
         const stats = d.stats;
-        
+
         document.getElementById('todaySales').textContent = 'Rs. ' + parseFloat(stats.today_sales).toLocaleString();
         document.getElementById('totalCust').textContent = stats.total_customers;
         document.getElementById('totalProd').textContent = stats.total_products;
         document.getElementById('lowStock').textContent = stats.low_stock;
-        
+
         const body = document.getElementById('recentSalesBody');
+
         if (d.recent_sales.length === 0) {
-            body.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#94a3b8;">No recent sales.</td></tr>';
-            return;
+            body.innerHTML = '<tr><td colspan="4" style="text-align:center;">No recent sales.</td></tr>';
+        } else {
+            body.innerHTML = d.recent_sales.map(s => `
+                <tr>
+                    <td>INV-${s.id}</td>
+                    <td>${s.customer ? s.customer.name : 'Walking Customer'}</td>
+                    <td>${s.date}</td>
+                    <td style="text-align:right;">Rs. ${parseFloat(s.total_bill).toLocaleString()}</td>
+                </tr>
+            `).join('');
         }
-        
-        body.innerHTML = d.recent_sales.map(s => `
-            <tr>
-                <td style="font-weight:600; color:#64748b;">INV-${s.id}</td>
-                <td style="font-weight:700;">${s.customer ? s.customer.name : 'Walking Customer'}</td>
-                <td style="color:#64748b;">${s.date}</td>
-                <td style="text-align:right; font-weight:800; color:var(--maken-amber-dark);">Rs. ${parseFloat(s.total_bill).toLocaleString()}</td>
-            </tr>
-        `).join('');
-    }).catch(err => {
-        console.error(err);
+    });
+
+    loadWeeklyChart();
+    loadMonthlyChart();
+}
+function loadWeeklyChart() {
+    axios.get('/api/dashboard/weekly-sales').then(res => {
+        const data = res.data.data;
+
+        const labels = data.map(d => d.day);
+        const values = data.map(d => d.total);
+
+        if (weeklyChartInstance) weeklyChartInstance.destroy();
+
+        weeklyChartInstance = new Chart(document.getElementById('weeklyChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sales (Weekly)',
+                    data: values,
+                    backgroundColor: '#fbbf24'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
     });
 }
+    function loadMonthlyChart() {
+    axios.get('/api/dashboard/monthly-sales').then(res => {
+        const data = res.data.data;
 
+        const labels = data.map(d => d.month);
+        const values = data.map(d => d.total);
+
+        if (monthlyChartInstance) monthlyChartInstance.destroy();
+
+        monthlyChartInstance = new Chart(document.getElementById('monthlyChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sales (Monthly)',
+                    data: values,
+                    borderColor: '#d97706',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    });
+}
 window.onload = loadDashboard;
 </script>
 
