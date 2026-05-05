@@ -582,8 +582,8 @@ document.getElementById('customerForm').onsubmit = function(e) {
         address:         document.getElementById('address').value,
     };
     (id ? axios.put(`${apiBase}/${id}`, data) : axios.post(apiBase, data))
-        .then(r => { alert(r.data.message || 'Saved!'); resetForm(); fetchCustomers(); })
-        .catch(err => alert(err.response?.data?.message || 'Error saving.'));
+        .then(r => { showPopup(r.data.message || 'success!', 'success'); resetForm(); fetchCustomers(); })
+        .catch(err => showPopup(err.response?.data?.message || 'Error saving.', 'error'));
 };
 
 /* EDIT */
@@ -601,10 +601,16 @@ function editCustomer(c) {
 
 /* DELETE */
 function deleteCustomer(id) {
-    if (!confirm('Delete this customer?')) return;
-    axios.delete(`${apiBase}?ids=${id}`)
-        .then(r => { alert(r.data.message||'Deleted.'); fetchCustomers(); })
-        .catch(() => alert('Failed to delete.'));
+   showPopup('Are you sure you want to delete this customer?', 'confirm', () => {
+        axios.delete(`${apiBase}?ids=${id}`)
+            .then(r => {
+                showPopup(r.data.message, 'success');
+                fetchCustomers();
+            })
+            .catch(() => {
+                showPopup('Failed to delete.', 'error');
+            });
+    });
 }
 
 /* RESET */
