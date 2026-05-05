@@ -225,13 +225,13 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
             // Redirect to dashboard
             window.location.href = "/dashboard";
         } else {
-            alert(data.message || "Login failed");
+            showPopup(data.message || "Login failed", "error");
         }
 
     } catch (error) {
         console.error(error);
-        alert("Something went wrong");
-    }
+        showPopup("Something went wrong", "error");
+    }   
 });
 </script>
 </body>
