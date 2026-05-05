@@ -80,6 +80,62 @@
     .act-btn.del:hover { background: var(--maken-danger); color: #fff; border-color: var(--maken-danger); }
 
     .empty-cell { text-align: center; padding: 52px 20px; color: #94a3b8; }
+    .mk-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s;
+}
+.mk-popup.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.mk-popup-box {
+    width: 320px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,.2);
+    animation: popIn .25s ease;
+}
+@keyframes popIn {
+    from { transform: scale(.9); opacity:0; }
+    to { transform: scale(1); opacity:1; }
+}
+
+.mk-popup-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+.mk-popup-msg {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+.mk-popup-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.mk-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+.mk-btn.ok { background: var(--maken-amber); }
+.mk-btn.cancel { background: #e2e8f0; }
+.mk-btn.danger { background: var(--maken-danger); color:#fff; }
 </style>
 
 <div class="mk-page">
@@ -153,6 +209,8 @@
             </table>
         </div>
     </div>
+   
+</div>
 </div>
 
 <script>
@@ -161,18 +219,25 @@ let all = [];
 
 function fetchProducts() {
     axios.get(apiBase + '?limit=1000')
-        .then(r => { all = r.data.data || []; render(); })
+        .then(r => { 
+            all = r.data.data || []; 
+            render(); 
+        })
         .catch(() => {
-            document.getElementById('productTableBody').innerHTML = '<tr><td colspan="6" class="empty-cell">Failed to load products.</td></tr>';
+            document.getElementById('productTableBody').innerHTML =
+                '<tr><td colspan="6" class="empty-cell">Failed to load products.</td></tr>';
         });
 }
 
 function render() {
     const q = (document.getElementById('tableSearch').value || '').toLowerCase();
-    const filtered = q ? all.filter(p => p.name.toLowerCase().includes(q) || (p.barcode||'').toLowerCase().includes(q)) : all;
+    const filtered = q 
+        ? all.filter(p => p.name.toLowerCase().includes(q) || (p.barcode||'').toLowerCase().includes(q)) 
+        : all;
     
     if (!filtered.length) {
-        document.getElementById('productTableBody').innerHTML = '<tr><td colspan="6" class="empty-cell">No products found.</td></tr>';
+        document.getElementById('productTableBody').innerHTML =
+            '<tr><td colspan="6" class="empty-cell">No products found.</td></tr>';
         return;
     }
 
@@ -182,11 +247,19 @@ function render() {
             <td style="font-weight:600">${p.name}</td>
             <td>${p.barcode || '—'}</td>
             <td>Rs. ${parseFloat(p.price).toLocaleString()}</td>
-            <td><span style="font-weight:700; color:${p.qty <= 5 ? 'var(--maken-danger)' : 'inherit'}">${p.qty}</span></td>
+            <td>
+                <span style="font-weight:700; color:${p.qty <= 5 ? 'var(--maken-danger)' : 'inherit'}">
+                    ${p.qty}
+                </span>
+            </td>
             <td style="text-align:center;">
                 <div style="display:flex; gap:4px; justify-content:center;">
-                    <button class="act-btn edit" onclick='editProduct(${JSON.stringify(p)})'><i class="fas fa-pen"></i></button>
-                    <button class="act-btn del" onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i></button>
+                    <button class="act-btn edit" onclick='editProduct(${JSON.stringify(p)})'>
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="act-btn del" onclick="deleteProduct(${p.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
             </td>
         </tr>
@@ -195,16 +268,25 @@ function render() {
 
 document.getElementById('productForm').onsubmit = function(e) {
     e.preventDefault();
+
     const id = document.getElementById('product_id').value;
+
     const data = {
         name: document.getElementById('name').value,
         barcode: document.getElementById('barcode').value,
         price: document.getElementById('price').value,
         qty: document.getElementById('qty').value,
     };
+
     (id ? axios.put(`${apiBase}/${id}`, data) : axios.post(apiBase, data))
-        .then(r => { alert(r.data.message); resetForm(); fetchProducts(); })
-        .catch(err => alert(err.response?.data?.message || 'Error saving.'));
+        .then(r => {
+            showPopup(r.data.message, 'success');
+            resetForm();
+            fetchProducts();
+        })
+        .catch(err => {
+            showPopup(err.response?.data?.message || 'Error saving.', 'error');
+        });
 };
 
 function editProduct(p) {
@@ -213,16 +295,24 @@ function editProduct(p) {
     document.getElementById('barcode').value = p.barcode || '';
     document.getElementById('price').value = p.price;
     document.getElementById('qty').value = p.qty;
+
     document.getElementById('saveBtn').textContent = 'Update Product';
     document.getElementById('saveBtn').classList.add('slate');
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function deleteProduct(id) {
-    if (!confirm('Delete this product?')) return;
-    axios.delete(`${apiBase}?ids=${id}`)
-        .then(r => { alert(r.data.message); fetchProducts(); })
-        .catch(() => alert('Failed to delete.'));
+    showPopup('Are you sure you want to delete this product?', 'confirm', () => {
+        axios.delete(`${apiBase}?ids=${id}`)
+            .then(r => {
+                showPopup(r.data.message, 'success');
+                fetchProducts();
+            })
+            .catch(() => {
+                showPopup('Failed to delete.', 'error');
+            });
+    });
 }
 
 function resetForm() {
@@ -232,9 +322,13 @@ function resetForm() {
     document.getElementById('saveBtn').classList.remove('slate');
 }
 
-document.getElementById('tableSearch').oninput = render;
 
+
+/* ---------------- EVENTS ---------------- */
+
+document.getElementById('tableSearch').oninput = render;
 window.onload = fetchProducts;
+
 </script>
 
 @endsection
