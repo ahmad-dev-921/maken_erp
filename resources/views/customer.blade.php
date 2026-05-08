@@ -64,7 +64,8 @@
     .btn-amber:hover { background: var(--maken-amber-dark); color: #fff; transform: translateY(-1px); }
     .btn-amber.slate { background: var(--maken-slate-2); color: #fff; }
 
-    .table-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--maken-line); }
+    .table-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+     padding: 16px 24px; border-bottom: 1px solid var(--maken-line); }
     .search-inp { height: 38px; width: 230px; border: 1.5px solid var(--maken-line); border-radius: 30px; background: var(--maken-surface); padding: 0 16px 0 36px; font-size: 13px; outline: none; transition: all .2s; }
     .search-inp:focus { border-color: var(--maken-amber); background: #fff; }
 
@@ -171,13 +172,13 @@
             </div>
         </div>
 
-        <div class="mk-field">
+        <!-- <div class="mk-field">
             <label>Opening Balance <span class="req">*</span></label>
             <div class="mk-input-wrap">
                 <i class="fas fa-wallet ico"></i>
                 <input type="number" step="0.01" id="opening_balance" class="mk-input" placeholder="0.00" required>
             </div>
-        </div>
+        </div> -->
 
         <div class="mk-field">
             <label>Address <span class="req">*</span></label>
@@ -218,7 +219,6 @@
                         <th>Customer Name</th>
                         <th>Email</th>
                         <th>Phone</th>
-                        <th>Opening Balance</th>
                         <th style="width:100px; text-align:center;">Actions</th>
                     </tr>
                 </thead>
@@ -266,7 +266,9 @@ function render() {
             <td style="font-weight:600">${p.name}</td>
             <td>${p.email || '—'}</td>
             <td>${p.phone || '—'}</td>
-            <td>Rs. ${parseFloat(p.opening_balance).toLocaleString()}</td>
+        
+      
+        
             <td style="text-align:center;">
                 <div style="display:flex; gap:4px; justify-content:center;">
                     <button class="act-btn edit" onclick='editCustomer(${JSON.stringify(p)})'>
@@ -290,7 +292,7 @@ document.getElementById('customerForm').onsubmit = function(e) {
         name: document.getElementById('name').value,
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
-        opening_balance: document.getElementById('opening_balance').value,
+        // opening_balance: document.getElementById('opening_balance').value,
         address: document.getElementById('address').value,
     };
 
@@ -310,7 +312,7 @@ function editCustomer(c) {
     document.getElementById('name').value = c.name;
     document.getElementById('email').value = c.email || '';
     document.getElementById('phone').value = c.phone || '';
-    document.getElementById('opening_balance').value = c.opening_balance;
+    // document.getElementById('opening_balance').value = c.opening_balance;
     document.getElementById('address').value = c.address || '';
 
     document.getElementById('saveBtn').textContent = 'Update Customer';
