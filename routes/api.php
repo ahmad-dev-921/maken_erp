@@ -36,5 +36,6 @@ Route::prefix('sales')->controller(SaleController::class)->group(function () {
 Route::prefix('quotations')->controller(QuotationController::class)->group(function () {
     Route::get('/', 'index');
     Route::post('/', 'store');
+    Route::get('/{id}', 'show');
     Route::delete('/{id}', 'destroy');
 });
