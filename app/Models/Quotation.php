@@ -14,11 +14,15 @@ class Quotation extends Model
         'reference_name',
         'items',
         'total',
-        'date'
+        'date',
+        'expiry_date',
     ];
 
     protected $casts = [
-        'items' => 'array'
+        'items' => 'array',
+        'total' => 'float',
+        'date' => 'date:Y-m-d',
+        'expiry_date' => 'date:Y-m-d',
     ];
 
     public function customer()
