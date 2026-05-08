@@ -22,8 +22,8 @@ class CustomerController extends Controller
                     $q->where('name', 'LIKE', "%{$request->search}%")
                       ->orWhere('email', 'LIKE', "%{$request->search}%")
                       ->orWhere('phone', 'LIKE', "%{$request->search}%")
-                      ->orWhere('address', 'LIKE', "%{$request->search}%")
-                      ->orWhere('opening_balance', 'LIKE', "%{$request->search}%");
+                      ->orWhere('address', 'LIKE', "%{$request->search}%");
+                    //   ->orWhere('opening_balance', 'LIKE', "%{$request->search}%");
                 });
             }
 
