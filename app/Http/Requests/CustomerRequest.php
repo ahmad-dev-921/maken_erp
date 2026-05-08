@@ -27,7 +27,7 @@ class CustomerRequest extends FormRequest
             'email' => 'nullable|email',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
-            'opening_balance' => 'required|numeric',
+            // 'opening_balance' => 'nullable|numeric',
         ];
         if ($this->isMethod('delete')) {
             $rules = [];    
