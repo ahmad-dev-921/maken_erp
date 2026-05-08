@@ -163,7 +163,7 @@
             </span>
         </div>
         <div class="card-body">
-            <canvas id="monthlyChart" height="120"></canvas>
+            <canvas id="monthlyChart" height="255"></canvas>
         </div>
     </div>
 
