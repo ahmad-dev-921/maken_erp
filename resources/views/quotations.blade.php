@@ -8,14 +8,13 @@
 
 <style>
     :root {
-        --maken-amber:     #fbbf24;
-        --maken-amber-dk:  #d97706;
-        --maken-slate:     #0f172a;
-        --maken-surface:   #f1f5f9;
-        --maken-white:     #ffffff;
-        --maken-line:      #e2e8f0;
-        --maken-danger:    #ef4444;
-        --maken-success:   #22c55e;
+        --maken-amber:   #fbbf24;
+        --maken-amber-dk:#d97706;
+        --maken-slate:   #0f172a;
+        --maken-surface: #f1f5f9;
+        --maken-white:   #ffffff;
+        --maken-line:    #e2e8f0;
+        --maken-danger:  #ef4444;
     }
 
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--maken-surface); color: var(--maken-slate); }
@@ -32,142 +31,21 @@
     .mk-table tbody tr:hover { background: #fafafa; }
 
     .btn-action { padding: 6px 13px; border-radius: 7px; border: 1px solid var(--maken-line); background: #fff; cursor: pointer; font-size: 12px; font-weight: 700; font-family: inherit; transition: all .2s; display: inline-flex; align-items: center; gap: 5px; }
-    .btn-action.restore:hover { background: var(--maken-amber); border-color: var(--maken-amber); }
-    .btn-action.receipt:hover { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
-    .btn-action.delete:hover  { background: #fee2e2; color: var(--maken-danger); border-color: #fecaca; }
+    .btn-action.restore:hover  { background: var(--maken-amber); border-color: var(--maken-amber); }
+    .btn-action.print-btn:hover { background: #0f172a; color: #fff; border-color: #0f172a; }
+    .btn-action.delete:hover   { background: #fee2e2; color: var(--maken-danger); border-color: #fecaca; }
 
-    /* Expiry badge */
-    .badge { display: inline-block; padding: 2px 9px; border-radius: 5px; font-size: 11px; font-weight: 700; margin-top: 4px; }
+    .badge { display: inline-block; padding: 2px 9px; border-radius: 5px; font-size: 11px; font-weight: 700; }
     .badge.valid   { background: #fef3c7; color: #92400e; }
     .badge.expired { background: #fee2e2; color: #b91c1c; }
     .badge.none    { background: #f1f5f9; color: #64748b; }
-
-    /* ── Receipt overlay ── */
-    .receipt-overlay {
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,0.55);
-        z-index: 3000;
-        display: flex; align-items: center; justify-content: center;
-        padding: 20px;
-    }
-
-    .receipt-modal {
-        background: #fff;
-        width: 540px;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 25px 60px rgba(0,0,0,.25);
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
-        animation: slideUp .2s ease;
-    }
-
-    @keyframes slideUp {
-        from { transform: translateY(20px); opacity: 0; }
-        to   { transform: translateY(0);    opacity: 1; }
-    }
-
-    .receipt-header {
-        background: var(--maken-slate);
-        color: #fff;
-        padding: 18px 24px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-shrink: 0;
-    }
-
-    .receipt-meta {
-        padding: 14px 24px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        border-bottom: 1px solid var(--maken-line);
-        flex-shrink: 0;
-    }
-
-    .receipt-items {
-        padding: 0 24px;
-        overflow-y: auto;
-        flex: 1;
-    }
-
-    .receipt-items table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-    }
-
-    .receipt-items th {
-        padding: 10px 0;
-        text-align: left;
-        font-size: 10px;
-        text-transform: uppercase;
-        letter-spacing: .5px;
-        color: #94a3b8;
-        border-bottom: 2px solid var(--maken-line);
-    }
-
-    .receipt-items th.right,
-    .receipt-items td.right { text-align: right; }
-    .receipt-items th.center,
-    .receipt-items td.center { text-align: center; }
-
-    .receipt-items td {
-        padding: 9px 0;
-        border-bottom: 1px solid #f8fafc;
-    }
-
-    .receipt-totals {
-        padding: 14px 24px;
-        background: #f8fafc;
-        border-top: 1px solid var(--maken-line);
-        flex-shrink: 0;
-    }
-
-    .receipt-total-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 13px;
-        margin-bottom: 7px;
-        color: #64748b;
-    }
-
-    .receipt-total-row.grand {
-        font-size: 17px;
-        font-weight: 800;
-        color: var(--maken-slate);
-        border-top: 2px dashed var(--maken-line);
-        padding-top: 10px;
-        margin-top: 5px;
-        margin-bottom: 0;
-    }
-
-    .receipt-footer {
-        padding: 14px 24px;
-        border-top: 1px solid var(--maken-line);
-        display: flex;
-        gap: 10px;
-        flex-shrink: 0;
-    }
-
-    /* ── Popup / toast ── */
-    .mk-popup { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-    .mk-toast { padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,.12); animation: fadeIn .3s; }
-    .mk-toast.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-    .mk-toast.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 </style>
-
-<div id="popupContainer" class="mk-popup"></div>
 
 <div class="quotation-page">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <div>
             <h2 style="margin:0; font-size:22px;">Held Carts / Quotations</h2>
-            <p style="margin:4px 0 0; color:#64748b; font-size:13px;">Manage saved carts and generate digital receipts</p>
+            <p style="margin:4px 0 0; color:#64748b; font-size:13px;">Manage saved carts and print quotation receipts</p>
         </div>
         <a href="/pos" class="btn-action restore" style="text-decoration:none; height:40px; padding:0 18px; font-size:13px;">
             <i class="fas fa-plus"></i> NEW SALE
@@ -202,24 +80,13 @@
 
 <script>
 /* ══════════════════════════════════
-   POPUP / TOAST
-══════════════════════════════════ */
-function showPopup(msg, type = 'success') {
-    const container = document.getElementById('popupContainer');
-    const toast = document.createElement('div');
-    toast.className = 'mk-toast ' + type;
-    toast.innerHTML = (type === 'success' ? '<i class="fas fa-check-circle"></i> ' : '<i class="fas fa-exclamation-circle"></i> ') + msg;
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-}
-
-/* ══════════════════════════════════
    FETCH & RENDER TABLE
 ══════════════════════════════════ */
 function fetchQuotations() {
     axios.get('/api/quotations').then(r => {
-        const body = document.getElementById('quotationTableBody');
-        const data = r.data.data;
+        const body  = document.getElementById('quotationTableBody');
+        const data  = r.data.data;
+        const today = new Date(); today.setHours(0,0,0,0);
 
         if (data.length === 0) {
             body.innerHTML = `
@@ -232,18 +99,13 @@ function fetchQuotations() {
             return;
         }
 
-        const today = new Date(); today.setHours(0,0,0,0);
-
         body.innerHTML = data.map(q => {
-            let badgeHtml = `<span class="badge none"><i class="fas fa-minus"></i> No expiry</span>`;
-
+            let badge = `<span class="badge none"><i class="fas fa-minus"></i> No expiry</span>`;
             if (q.expiry_date) {
-                const exp     = new Date(q.expiry_date);
-                const expired = exp < today;
-                const label   = expired
-                    ? `<i class="fas fa-exclamation-triangle"></i> Expired: ${q.expiry_date}`
-                    : `<i class="fas fa-clock"></i> Expires: ${q.expiry_date}`;
-                badgeHtml = `<span class="badge ${expired ? 'expired' : 'valid'}">${label}</span>`;
+                const expired = new Date(q.expiry_date) < today;
+                badge = expired
+                    ? `<span class="badge expired"><i class="fas fa-exclamation-triangle"></i> Expired: ${q.expiry_date}</span>`
+                    : `<span class="badge valid"><i class="fas fa-clock"></i> Expires: ${q.expiry_date}</span>`;
             }
 
             return `
@@ -256,12 +118,12 @@ function fetchQuotations() {
                             ${q.items.length} item${q.items.length !== 1 ? 's' : ''}
                         </span>
                     </td>
-                    <td style="font-weight:800; color:var(--maken-slate);">Rs. ${parseFloat(q.total).toLocaleString()}</td>
-                    <td>${badgeHtml}</td>
+                    <td style="font-weight:800;">Rs. ${parseFloat(q.total).toLocaleString()}</td>
+                    <td>${badge}</td>
                     <td style="text-align:center;">
                         <div style="display:flex; gap:6px; justify-content:center;">
-                            <button class="btn-action receipt" onclick="viewReceipt(${q.id})">
-                                <i class="fas fa-receipt"></i> Receipt
+                            <button class="btn-action print-btn" onclick="printQuotation(${q.id})">
+                                <i class="fas fa-print"></i> Print
                             </button>
                             <button class="btn-action restore" onclick="restore(${q.id})">
                                 <i class="fas fa-undo"></i> Restore
@@ -274,260 +136,301 @@ function fetchQuotations() {
                 </tr>
             `;
         }).join('');
+
     }).catch(() => showPopup('Failed to load quotations', 'error'));
 }
 
+/* ══════════════════════════════════════════════════
+   PRINT QUOTATION — opens its own A4 popup window.
+   The thermal receipt in app.blade is for SALES only.
+   Quotations are formal A4 documents for the customer.
+══════════════════════════════════════════════════ */
+function printQuotation(id) {
+    axios.get('/api/quotations/' + id).then(r => {
+        const q         = r.data.data;
+        const today     = new Date(); today.setHours(0,0,0,0);
+        const isExpired = q.expiry_date && new Date(q.expiry_date) < today;
+        const customer  = q.customer ? q.customer.name : 'Walking Customer';
+        const phone     = q.customer && q.customer.phone ? q.customer.phone : '';
+        const subtotal  = parseFloat(q.total);
+        const discount  = parseFloat(q.discount || 0);
+        const grand     = Math.max(0, subtotal - discount);
+        const qtNum     = 'QT-' + String(q.id).padStart(5, '0');
+
+        /* ── Build item rows ── */
+        let itemRows = '';
+        q.items.forEach((item, i) => {
+            const lineTotal = (item.qty * parseFloat(item.price)).toLocaleString('en', { minimumFractionDigits: 0 });
+            itemRows += `
+                <tr>
+                    <td style="padding:9px 10px; border-bottom:1px solid #f0f0f0;">${i + 1}</td>
+                    <td style="padding:9px 10px; border-bottom:1px solid #f0f0f0; font-weight:600;">${item.name}</td>
+                    <td style="padding:9px 10px; border-bottom:1px solid #f0f0f0; text-align:center;">${item.qty}</td>
+                    <td style="padding:9px 10px; border-bottom:1px solid #f0f0f0; text-align:right;">Rs. ${parseFloat(item.price).toLocaleString()}</td>
+                    <td style="padding:9px 10px; border-bottom:1px solid #f0f0f0; text-align:right; font-weight:700;">Rs. ${lineTotal}</td>
+                </tr>
+            `;
+        });
+
+        /* ── Discount row ── */
+        const discountRow = discount > 0 ? `
+            <tr>
+                <td colspan="4" style="padding:8px 10px; text-align:right; color:#dc2626; font-weight:600;">Discount</td>
+                <td style="padding:8px 10px; text-align:right; color:#dc2626; font-weight:700;">
+                    − Rs. ${discount.toLocaleString('en', { minimumFractionDigits: 0 })}
+                </td>
+            </tr>
+        ` : '';
+
+        /* ── Validity banner ── */
+        const validityText = isExpired
+            ? `⚠ This quotation expired on ${q.expiry_date}`
+            : (q.expiry_date ? `✓ Valid until ${q.expiry_date}` : '✓ No expiry date set');
+
+        const validityBg    = isExpired ? '#fee2e2' : '#fef3c7';
+        const validityColor = isExpired ? '#b91c1c' : '#92400e';
+        const statusText    = isExpired ? 'EXPIRED'   : 'QUOTATION';
+        const statusColor   = isExpired ? '#b91c1c'   : '#d97706';
+
+        /* ── Full A4 HTML document ── */
+        const html = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quotation ${qtNum}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13px;
+            color: #0f172a;
+            background: #fff;
+            padding: 30px 35px;
+        }
+        @media print {
+            body { padding: 20px 25px; }
+            @page { size: A4; margin: 0; }
+        }
+
+        /* Header */
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 16px;
+            border-bottom: 3px solid #0f172a;
+            margin-bottom: 18px;
+        }
+        .shop-name   { font-size: 22px; font-weight: 800; letter-spacing: -.5px; }
+        .shop-sub    { font-size: 11px; color: #64748b; margin-top: 3px; line-height: 1.6; }
+        .doc-type    { font-size: 28px; font-weight: 800; color: #0f172a; text-align: right; letter-spacing: -1px; }
+        .doc-num     { font-size: 13px; font-weight: 700; color: #d97706; text-align: right; margin-top: 3px; }
+
+        /* Meta grid */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .meta-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 15px;
+        }
+        .meta-label { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: #94a3b8; margin-bottom: 5px; font-weight: 700; }
+        .meta-value { font-size: 14px; font-weight: 700; }
+        .meta-sub   { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+        /* Status badge */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .5px;
+            background: ${isExpired ? '#fee2e2' : '#fef3c7'};
+            color: ${statusColor};
+        }
+
+        /* Items table */
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: #0f172a; color: #fff; }
+        thead th { padding: 10px 10px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+        thead th.r { text-align: right; }
+        thead th.c { text-align: center; }
+
+        /* Totals */
+        .totals-wrap { margin-top: 6px; display: flex; justify-content: flex-end; }
+        .totals-box  { width: 260px; }
+        .total-row   { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; color: #64748b; }
+        .total-row.grand {
+            font-size: 16px; font-weight: 800; color: #0f172a;
+            border-top: 2px solid #0f172a;
+            margin-top: 5px; padding-top: 8px;
+        }
+
+        /* Validity banner */
+        .validity-banner {
+            text-align: center;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin: 14px 0;
+            background: ${validityBg};
+            color: ${validityColor};
+        }
+
+        /* Signatures */
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+        }
+        .sig-line {
+            width: 160px;
+            border-top: 1px solid #0f172a;
+            text-align: center;
+            padding-top: 6px;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Footer */
+        .doc-footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10.5px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="doc-header">
+        <div>
+            <div class="shop-name">Maken Solar Energy</div>
+            <div class="shop-sub">
+                Electronic Market, Habib Bank Street, Block No. 5<br>
+                Tel: 0314-4949491 / 0308-8288461
+            </div>
+        </div>
+        <div>
+            <div class="doc-type">QUOTATION</div>
+            <div class="doc-num">${qtNum}</div>
+        </div>
+    </div>
+
+    <!-- Meta info -->
+    <div class="meta-grid">
+        <div class="meta-box">
+            <div class="meta-label">Bill To</div>
+            <div class="meta-value">${customer}</div>
+            ${phone ? `<div class="meta-sub">${phone}</div>` : ''}
+        </div>
+        <div class="meta-box">
+            <div class="meta-label">Details</div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div class="meta-sub" style="margin-bottom:4px;">Date: <strong>${q.date}</strong></div>
+                    ${q.reference_name ? `<div class="meta-sub">Ref: <strong>${q.reference_name}</strong></div>` : ''}
+                </div>
+                <span class="status-badge">${statusText}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Items -->
+    <table>
+        <thead>
+            <tr>
+                <th style="width:30px;">#</th>
+                <th>Product Description</th>
+                <th class="c" style="width:60px;">Qty</th>
+                <th class="r" style="width:120px;">Unit Price</th>
+                <th class="r" style="width:120px;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${itemRows}
+            ${discountRow}
+        </tbody>
+    </table>
+
+    <!-- Validity banner -->
+    <div class="validity-banner">${validityText}</div>
+
+    <!-- Totals -->
+    <div class="totals-wrap">
+        <div class="totals-box">
+            <div class="total-row">
+                <span>Subtotal</span>
+                <span>Rs. ${subtotal.toLocaleString('en', { minimumFractionDigits: 0 })}</span>
+            </div>
+            ${discount > 0 ? `
+            <div class="total-row" style="color:#dc2626;">
+                <span>Discount</span>
+                <span>− Rs. ${discount.toLocaleString('en', { minimumFractionDigits: 0 })}</span>
+            </div>` : ''}
+            <div class="total-row grand">
+                <span>Grand Total</span>
+                <span>Rs. ${grand.toLocaleString('en', { minimumFractionDigits: 0 })}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="signatures">
+        <div class="sig-line">Customer Signature</div>
+        <div class="sig-line">Authorized Signatory</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="doc-footer">
+        This is a computer generated quotation and does not require a physical signature.<br>
+        Prices are subject to change after the validity date. &nbsp;|&nbsp; <strong>Maken Solar Energy</strong>
+    </div>
+
+</body>
+</html>`;
+
+        /* ── Open print window ── */
+        const win = window.open('', '_blank', 'width=800,height=900');
+        win.document.write(html);
+        win.document.close();
+        win.addEventListener('load', () => {
+            setTimeout(() => { win.focus(); win.print(); }, 500);
+        });
+
+    }).catch(err => {
+        console.error(err);
+        showPopup('Failed to load quotation', 'error');
+    });
+}
+
 /* ══════════════════════════════════
-   RESTORE TO POS
+   RESTORE & DELETE
 ══════════════════════════════════ */
 function restore(id) {
     window.location.href = '/pos?restore=' + id;
 }
 
-/* ══════════════════════════════════
-   DELETE
-══════════════════════════════════ */
 function remove(id) {
-    if (!confirm('Delete this quotation? This cannot be undone.')) return;
-    axios.delete('/api/quotations/' + id)
-        .then(() => { showPopup('Quotation deleted'); fetchQuotations(); })
-        .catch(() => showPopup('Failed to delete', 'error'));
-}
-
-/* ══════════════════════════════════
-   VIEW RECEIPT MODAL
-══════════════════════════════════ */
-function viewReceipt(id) {
-    axios.get('/api/quotations/' + id).then(r => {
-        const q        = r.data.data;
-        const customer = q.customer ? q.customer.name : 'Walking Customer';
-        const phone    = q.customer && q.customer.phone ? q.customer.phone : '';
-        const today    = new Date(); today.setHours(0,0,0,0);
-        const expired  = q.expiry_date && new Date(q.expiry_date) < today;
-
-        /* ── Items rows ── */
-        const rows = q.items.map((item, i) => {
-            const lineTotal = (item.qty * item.price).toLocaleString('en', { minimumFractionDigits: 2 });
-            return `
-                <tr>
-                    <td style="color:#94a3b8; width:28px;">${i + 1}</td>
-                    <td style="font-weight:600;">${item.name}</td>
-                    <td class="center">${item.qty}</td>
-                    <td class="right">Rs. ${parseFloat(item.price).toLocaleString()}</td>
-                    <td class="right" style="font-weight:700;">Rs. ${lineTotal}</td>
-                </tr>
-            `;
-        }).join('');
-
-        /* ── Totals ── */
-        const subtotal = parseFloat(q.total);
-        const discount = parseFloat(q.discount || 0);
-        const grand    = Math.max(0, subtotal - discount);
-
-        const discountRow = discount > 0 ? `
-            <div class="receipt-total-row">
-                <span>Discount</span>
-                <span style="color:#dc2626; font-weight:700;">− Rs. ${discount.toLocaleString('en', { minimumFractionDigits: 2 })}</span>
-            </div>
-        ` : '';
-
-        /* ── Expiry badge ── */
-        let expiryHtml = `<span style="font-size:12px; color:#94a3b8;">No expiry set</span>`;
-        if (q.expiry_date) {
-            expiryHtml = `
-                <span style="display:inline-block; padding:3px 10px; border-radius:5px; font-size:12px; font-weight:700;
-                    background:${expired ? '#fee2e2' : '#fef3c7'};
-                    color:${expired ? '#b91c1c' : '#92400e'};">
-                    ${expired ? '⚠ Expired: ' : '✓ Expires: '}${q.expiry_date}
-                </span>
-            `;
-        }
-
-        /* ── Build modal HTML ── */
-        const html = `
-            <div class="receipt-overlay" id="receiptOverlay" onclick="closeReceiptOnBg(event)">
-                <div class="receipt-modal" id="receiptModal">
-
-                    {{-- Header --}}
-                    <div class="receipt-header">
-                        <div>
-                            <div style="font-size:18px; font-weight:800; letter-spacing:-.3px;">Maken POS</div>
-                            <div style="font-size:11px; opacity:.5; margin-top:2px;">Quotation Receipt</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="color:#fbbf24; font-weight:800; font-size:15px; letter-spacing:.5px;">
-                                #QT-${String(q.id).padStart(5, '0')}
-                            </div>
-                            <div style="font-size:11px; opacity:.5; margin-top:2px;">${q.date}</div>
-                        </div>
-                    </div>
-
-                    {{-- Customer + Expiry --}}
-                    <div class="receipt-meta">
-                        <div>
-                            <div style="font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:#94a3b8; margin-bottom:4px;">Bill To</div>
-                            <div style="font-weight:700; font-size:14px;">${customer}</div>
-                            ${phone ? `<div style="font-size:12px; color:#64748b; margin-top:2px;"><i class="fas fa-phone" style="font-size:10px;"></i> ${phone}</div>` : ''}
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:#94a3b8; margin-bottom:4px;">Validity</div>
-                            ${expiryHtml}
-                            ${q.reference_name
-                                ? `<div style="font-size:11px; color:#94a3b8; margin-top:6px;">
-                                       <i class="fas fa-tag" style="font-size:10px;"></i> ${q.reference_name}
-                                   </div>`
-                                : ''}
-                        </div>
-                    </div>
-
-                    {{-- Items table --}}
-                    <div class="receipt-items">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="width:28px;">#</th>
-                                    <th>Item</th>
-                                    <th class="center" style="width:50px;">Qty</th>
-                                    <th class="right" style="width:100px;">Unit Price</th>
-                                    <th class="right" style="width:100px;">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>
-
-                    {{-- Totals --}}
-                    <div class="receipt-totals">
-                        <div class="receipt-total-row">
-                            <span>Subtotal (${q.items.length} item${q.items.length !== 1 ? 's' : ''})</span>
-                            <span>Rs. ${subtotal.toLocaleString('en', { minimumFractionDigits: 2 })}</span>
-                        </div>
-                        ${discountRow}
-                        <div class="receipt-total-row grand">
-                            <span>Grand Total</span>
-                            <span>Rs. ${grand.toLocaleString('en', { minimumFractionDigits: 2 })}</span>
-                        </div>
-                    </div>
-
-                    {{-- Footer actions --}}
-                    <div class="receipt-footer">
-                        <button
-                            onclick="printReceipt()"
-                            style="flex:1; height:44px; background:var(--maken-slate); color:#fff; border:none; border-radius:9px; font-weight:700; cursor:pointer; font-size:13px; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:7px; transition:background .2s;"
-                            onmouseover="this.style.background='#1e293b'"
-                            onmouseout="this.style.background='var(--maken-slate)'">
-                            <i class="fas fa-print"></i> Print Receipt
-                        </button>
-                        <button
-                            onclick="document.getElementById('receiptOverlay').remove()"
-                            style="height:44px; padding:0 20px; border:1.5px solid var(--maken-line); background:#fff; border-radius:9px; font-weight:700; cursor:pointer; font-size:13px; font-family:inherit; transition:all .2s;"
-                            onmouseover="this.style.background='#f8fafc'"
-                            onmouseout="this.style.background='#fff'">
-                            Close
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        `;
-
-        /* Remove any existing overlay, then inject */
-        const existing = document.getElementById('receiptOverlay');
-        if (existing) existing.remove();
-        document.body.insertAdjacentHTML('beforeend', html);
-
-    }).catch(() => showPopup('Failed to load receipt', 'error'));
-}
-
-/* Close overlay when clicking the dark background */
-function closeReceiptOnBg(e) {
-    if (e.target.id === 'receiptOverlay') {
-        document.getElementById('receiptOverlay').remove();
-    }
-}
-
-/* ══════════════════════════════════
-   PRINT RECEIPT
-══════════════════════════════════ */
-function printReceipt() {
-    const modal = document.getElementById('receiptModal');
-    if (!modal) return;
-
-    const win = window.open('', '_blank', 'width=600,height=800');
-    win.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Quotation Receipt</title>
-            <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body {
-                    font-family: 'Plus Jakarta Sans', sans-serif;
-                    background: #fff;
-                    color: #0f172a;
-                }
-                .receipt-modal {
-                    width: 100%;
-                    max-width: 540px;
-                    margin: 0 auto;
-                }
-                .receipt-header {
-                    background: #0f172a;
-                    color: #fff;
-                    padding: 18px 24px;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                }
-                .receipt-meta {
-                    padding: 14px 24px;
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 12px;
-                    border-bottom: 1px solid #e2e8f0;
-                }
-                .receipt-items { padding: 0 24px; }
-                .receipt-items table { width: 100%; border-collapse: collapse; font-size: 13px; }
-                .receipt-items th {
-                    padding: 10px 0;
-                    text-align: left;
-                    font-size: 10px;
-                    text-transform: uppercase;
-                    letter-spacing: .5px;
-                    color: #94a3b8;
-                    border-bottom: 2px solid #e2e8f0;
-                }
-                .receipt-items td { padding: 9px 0; border-bottom: 1px solid #f8fafc; font-size: 13px; }
-                .right { text-align: right; }
-                .center { text-align: center; }
-                .receipt-totals { padding: 14px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; }
-                .receipt-total-row { display: flex; justify-content: space-between; font-size: 13px; color: #64748b; margin-bottom: 7px; }
-                .receipt-total-row.grand { font-size: 17px; font-weight: 800; color: #0f172a; border-top: 2px dashed #e2e8f0; padding-top: 10px; margin-top: 5px; margin-bottom: 0; }
-                .receipt-footer { display: none; }
-                @media print {
-                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                }
-            </style>
-        </head>
-        <body>
-            ${modal.outerHTML}
-        </body>
-        </html>
-    `);
-    win.document.close();
-
-    /* Wait for fonts/icons then print */
-    win.addEventListener('load', () => {
-        setTimeout(() => { win.focus(); win.print(); }, 600);
+    showPopup('Delete this quotation? This cannot be undone.', 'confirm', () => {
+        axios.delete('/api/quotations/' + id)
+            .then(() => { showPopup('Quotation deleted'); fetchQuotations(); })
+            .catch(() => showPopup('Failed to delete', 'error'));
     });
 }
 
-/* ══════════════════════════════════
-   INIT
-══════════════════════════════════ */
 window.onload = fetchQuotations;
 </script>
 
