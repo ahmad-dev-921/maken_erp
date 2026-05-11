@@ -123,7 +123,7 @@
     <div class="main-panel">
         <div class="mk-card" style="height:100%;">
             <div class="card-header">
-                <span><i class="fas fa-th-large"></i> Products</span>
+                <span> <i data-lucide="package"></i>  Products</span>
                 <input type="text" id="prodSearch" class="search-input" style="width:250px; height:34px;" placeholder="Search products or barcode...">
             </div>
             <div class="card-body" style="overflow-y:auto; max-height:70vh;">
