@@ -284,13 +284,25 @@
         </div>
     </div>
 
-    <div class="sidebar-user">
-        <div class="user-avatar">AD</div>
-        <div class="user-info-text">
-            <div class="user-name">Admin User</div>
-            <div class="user-role">Shop Owner</div>
-        </div>
+<div class="sidebar-user">
+    <div class="user-avatar">
+        {{ Auth::check() ? strtoupper(substr(Auth::user()->name, 0, 2)) : 'AD' }}
     </div>
+    <div class="user-info-text">
+        <div class="user-name" style="color: #fff;">Admin</div>
+        <div class="user-role" style="color: #94a3b8;">Shop Owner</div>
+    </div>
+
+    <form method="POST" action="/logout" style="margin-left:auto; margin-bottom:0;">
+        @csrf
+        <button type="submit" title="Logout"
+            style="background:none; border:none; cursor:pointer; color:#94a3b8; padding:4px; border-radius:6px;"
+            onmouseover="this.style.color='#fbbf24'"
+            onmouseout="this.style.color='#94a3b8'">
+            <i data-lucide="log-out" style="width:18px; height:18px;"></i>
+        </button>
+    </form>
+</div>
 </aside>
 
 <div id="main-wrapper">
