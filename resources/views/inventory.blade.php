@@ -176,8 +176,8 @@
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn-ghost" onclick="resetForm()">Reset</button>
-                    <button type="submit" class="btn-amber" id="saveBtn">Save Product</button>
+                    <button type="button" class="btn-ghost" onclick="resetForm()"><i class="fas fa-rotate-left"></i> Reset</button>
+                    <button type="submit" class="btn-amber" id="saveBtn"> <i class="fas fa-floppy-disk"></i> Save Product</button>
                 </div>
             </form>
         </div>
