@@ -255,7 +255,7 @@
         <h3><i class="fas fa-pause-circle" style="color:var(--maken-amber-dark);"></i> Hold Cart</h3>
         <div class="hold-field">
             <label>Reference Name</label>
-            <input type="text" id="holdRef" placeholder="e.g. Ahmed — Summer Deal" />
+            <input type="text" id="holdRef" placeholder="e.g. Battery + Inverter Order" />
         </div>
         <div class="hold-field">
             <label>Valid for (days)</label>
