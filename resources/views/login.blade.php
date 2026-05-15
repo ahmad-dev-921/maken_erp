@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Maken Electronic</title>
+    <title>Login | Maken Solar Energy</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -135,9 +135,9 @@
                         <i data-lucide="zap" class="text-white"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold italic text-uppercase mb-1">Maken Electronic</h4>
+                        <h4 class="fw-bold italic text-uppercase mb-1">Maken Solar Energy</h4>
                         <p class="text-white-50 fw-bold small text-uppercase tracking-widest mb-0">
-                            Quality Electronics
+                            Premium Solar Solutions
                         </p>
                     </div>
                 </div>
@@ -164,24 +164,31 @@
                 <p class="text-muted fw-500">Welcome back! Please enter your details.</p>
             </div>
 
-        <form id="loginForm">
+<form method="POST" action="/login">
     @csrf
 
-    <!-- Email -->
+    @if ($errors->any())
+        <div class="alert alert-danger rounded-3 mb-4 fw-bold" style="font-size:0.85rem;">
+            {{ $errors->first() }}
+        </div>
+    @endif
+
     <div class="mb-4 position-relative">
         <label class="form-label small fw-bold text-uppercase text-muted ms-1">Email Address</label>
         <div class="position-relative">
             <span class="input-group-text"><i data-lucide="mail" size="18"></i></span>
-            <input type="email" name="email" class="form-control" placeholder="name@company.com" required>
+            <input type="text" name="email" class="form-control"
+                   placeholder="name@company.com"
+                   value="{{ old('email') }}" required>
         </div>
     </div>
 
-    <!-- Password -->
     <div class="mb-4">
         <label class="form-label small fw-bold text-uppercase text-muted ms-1">Password</label>
         <div class="position-relative">
             <span class="input-group-text"><i data-lucide="lock" size="18"></i></span>
-            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+            <input type="password" name="password" class="form-control"
+                   placeholder="••••••••" required>
         </div>
     </div>
 
