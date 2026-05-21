@@ -312,15 +312,17 @@ function editCustomer(c) {
     document.getElementById('name').value = c.name;
     document.getElementById('email').value = c.email || '';
     document.getElementById('phone').value = c.phone || '';
-    // document.getElementById('opening_balance').value = c.opening_balance;
     document.getElementById('address').value = c.address || '';
 
-    document.getElementById('saveBtn').textContent = 'Update Customer';
+    document.getElementById('saveBtn').innerHTML = '<i class="fas fa-floppy-disk"></i> Update Customer';
     document.getElementById('saveBtn').classList.add('slate');
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll the actual scrollable container, not window
+    const scrollArea = document.querySelector('.scroll-area');
+    if (scrollArea) {
+        scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 }
-
 function deleteCustomer(id) {
     showPopup('Are you sure you want to delete this customer?', 'confirm', () => {
         axios.delete(`${apiBase}?ids=${id}`)
