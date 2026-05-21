@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Maken Solar Energy</title>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -132,7 +130,7 @@
             <div>
                 <div class="d-flex align-items-center">
                     <div class="brand-badge mb-4 me-3">
-                        <i data-lucide="zap" class="text-white"></i>
+                        <i class="fa-solid fa-bolt text-white" style="font-size: 29px;"></i>
                     </div>
                     <div>
                         <h4 class="fw-bold italic text-uppercase mb-1">Maken Solar Energy</h4>
@@ -147,9 +145,9 @@
             </div>
             
             <div class="d-flex align-items-center gap-3">
-                <div class="p-3 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-25">
-                    <i data-lucide="award" class="text-warning"></i>
-                </div>
+  <div class="p-3 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-25">
+    <i class="fa-solid fa-award text-warning" style="font-size: 32px;"></i>
+</div>
                 <div>
                     <p class="mb-0 fw-bold">Certified Quality</p>
                     <small class="text-white-50">Authorized Personnel Only</small>
@@ -176,7 +174,9 @@
     <div class="mb-4 position-relative">
         <label class="form-label small fw-bold text-uppercase text-muted ms-1">Email Address</label>
         <div class="position-relative">
-            <span class="input-group-text"><i data-lucide="mail" size="18"></i></span>
+            <span class="input-group-text">
+                <i class="fa-solid fa-envelope text-muted"></i>
+            </span>
             <input type="text" name="email" class="form-control"
                    placeholder="name@company.com"
                    value="{{ old('email') }}" required>
@@ -186,28 +186,27 @@
     <div class="mb-4">
         <label class="form-label small fw-bold text-uppercase text-muted ms-1">Password</label>
         <div class="position-relative">
-            <span class="input-group-text"><i data-lucide="lock" size="18"></i></span>
+            <span class="input-group-text"><i class="fa-solid fa-lock text-muted"></i></span>
             <input type="password" name="password" class="form-control"
                    placeholder="••••••••" required>
         </div>
     </div>
 
     <button type="submit" class="btn btn-login w-100 mb-4">
-        Sign In <i data-lucide="arrow-right" class="ms-2" size="18"></i>
+        Sign In <i class="fa-solid fa-arrow-right ms-2"></i>
     </button>
 </form>
 
             <div class="mt-auto pt-5 border-top d-flex justify-content-center gap-4">
                 <a href="#" class="text-muted text-decoration-none d-flex align-items-center gap-2">
-                    <i data-lucide="headphones" size="16"></i> <span class="small fw-bold text-uppercase">Support</span>
+                 <i class="fa-solid fa-headphones"></i><span class="small fw-bold text-uppercase">Support</span>
                 </a>
                 <a href="#" class="text-muted text-decoration-none d-flex align-items-center gap-2">
-                    <i data-lucide="shield-check" size="16"></i> <span class="small fw-bold text-uppercase">Admin</span>
+                   <i class="fa-solid fa-shield-halved"></i><span class="small fw-bold text-uppercase">Admin</span>
                 </a>
             </div>
-        </div>
+        </div>  
     </div>
-
 <script>
 document.getElementById("loginForm").addEventListener("submit", async function(e) {
     e.preventDefault();
@@ -226,10 +225,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
         let data = await response.json();
 
         if (response.ok) {
-            // Save token
             localStorage.setItem("token", data.token);
-
-            // Redirect to dashboard
             window.location.href = "/dashboard";
         } else {
             showPopup(data.message || "Login failed", "error");
@@ -240,6 +236,8 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
         showPopup("Something went wrong", "error");
     }   
 });
+
+
 </script>
 </body>
 </html>
