@@ -296,12 +296,17 @@ function editProduct(p) {
     document.getElementById('price').value = p.price;
     document.getElementById('qty').value = p.qty;
 
-    document.getElementById('saveBtn').textContent = 'Update Product';
+    document.getElementById('saveBtn').innerHTML = '<i class="fas fa-floppy-disk"></i> Update Product';
     document.getElementById('saveBtn').classList.add('slate');
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+    const scrollArea = document.querySelector('.scroll-area');
+    if (scrollArea) {
+        scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
+    // Wait for scroll to finish before focusing
+    setTimeout(() => document.getElementById('name').focus(), 350);
+}
 function deleteProduct(id) {
     showPopup('Are you sure you want to delete this product?', 'confirm', () => {
         axios.delete(`${apiBase}?ids=${id}`)
