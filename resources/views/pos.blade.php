@@ -15,7 +15,7 @@
         --maken-surface:   #f1f5f9;
         --maken-white:     #ffffff;
         --maken-line:      #e2e8f0;
-        --maken-danger:    #ef4444;
+        --maken-danger:    #d11010;
         --maken-success:   #22c55e;
         --radius-lg:       14px;
         --shadow-card:     0 4px 20px rgba(0,0,0,.08);
@@ -746,7 +746,104 @@ document.getElementById('holdDays').oninput   = updateExpiryPreview;
 document.getElementById('holdOverlay').addEventListener('click', function(e) {
     if (e.target === this) closeHoldModal();
 });
+// PASTE THIS ENTIRE BLOCK inside your <script> tag in pos.blade.php
+// Add it right before the last line: window.onload = loadData;
 
+/* ══════════════════════════════════════════════════════════
+   BARCODE SCANNER SUPPORT
+   A USB scanner types characters fast then sends Enter.
+   We detect this by timing keystrokes < 50ms = scanner.
+   Works globally — no need to click search box first.
+══════════════════════════════════════════════════════════ */
+let scanBuffer = '';
+let scanTimer  = null;
+const SCAN_SPEED = 50; // ms between keystrokes — scanner is faster than human
+
+document.addEventListener('keydown', function(e) {
+
+    // Don't intercept when typing in qty/price inputs or forms
+    const isCartInput  = document.activeElement.classList.contains('cart-input');
+    const isPriceInput = document.activeElement.classList.contains('price-input');
+    const inQuickAdd   = !!document.activeElement.closest('#quickAddForm');
+    const inHoldModal  = !!document.activeElement.closest('#holdOverlay');
+    const inSelect     = document.activeElement.tagName === 'SELECT';
+
+    if (isCartInput || isPriceInput || inQuickAdd || inHoldModal || inSelect) return;
+
+    if (e.key === 'Enter') {
+        if (scanBuffer.length >= 3) handleBarcodeScan(scanBuffer.trim());
+        scanBuffer = '';
+        clearTimeout(scanTimer);
+        return;
+    }
+
+    if (e.key.length === 1) {
+        scanBuffer += e.key;
+
+        // Mirror into search box so staff can see the scan happening
+        const s = document.getElementById('prodSearch');
+        if (s) { s.value = scanBuffer; renderProducts(scanBuffer); }
+
+        clearTimeout(scanTimer);
+        scanTimer = setTimeout(() => {
+            // Keystrokes were slow = manual typing, not scanner
+            // Leave the search results showing, just reset the buffer
+            scanBuffer = '';
+        }, SCAN_SPEED);
+    }
+});
+
+function handleBarcodeScan(barcode) {
+    // Reset the search box after a scan
+    const s = document.getElementById('prodSearch');
+    if (s) { s.value = ''; renderProducts(''); }
+
+    // Match by exact barcode
+    const product = products.find(p =>
+        p.barcode && String(p.barcode).trim() === String(barcode).trim()
+    );
+
+    if (!product) {
+        showScanFeedback('Barcode not found: ' + barcode, 'error');
+        return;
+    }
+
+    if (product.qty <= 0) {
+        showScanFeedback('Out of stock: ' + product.name, 'error');
+        return;
+    }
+
+    addToCart(product.id);
+    showScanFeedback('Added to cart: ' + product.name, 'success');
+}
+
+/* Floating banner that appears briefly after each scan */
+function showScanFeedback(msg, type) {
+    let fb = document.getElementById('scanFeedback');
+    if (!fb) {
+        fb = document.createElement('div');
+        fb.id = 'scanFeedback';
+        fb.style.cssText = [
+            'position:fixed', 'top:76px', 'left:50%',
+            'transform:translateX(-50%)', 'z-index:9999',
+            'padding:10px 24px', 'border-radius:9px',
+            'font-size:14px', 'font-weight:700',
+            "font-family:'Plus Jakarta Sans',sans-serif",
+            'box-shadow:0 4px 20px rgba(0,0,0,.15)',
+            'transition:opacity .3s', 'pointer-events:none',
+            'white-space:nowrap'
+        ].join(';');
+        document.body.appendChild(fb);
+    }
+
+    clearTimeout(fb._t);
+    fb.textContent   = (type === 'success' ? '✓ ' : '✗ ') + msg;
+    fb.style.opacity = '1';
+    fb.style.background = type === 'success' ? '#f0fdf4' : '#fef2f2';
+    fb.style.color      = type === 'success' ? '#166534' : '#991b1b';
+    fb.style.border     = `1px solid ${type === 'success' ? '#bbf7d0' : '#fecaca'}`;
+    fb._t = setTimeout(() => fb.style.opacity = '0', 2000);
+}
 window.onload = loadData;
 </script>
 
